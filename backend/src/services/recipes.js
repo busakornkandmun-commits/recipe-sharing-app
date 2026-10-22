@@ -28,7 +28,9 @@ export async function createRecipe(userId, { title, ingredients, imageUrl }) {
 }
 
 export async function listAllRecipes() {
-    return await Recipe.find().sort({ createdAt: 'descending' })
+    return await Recipe.find()
+        .populate('author', 'username')
+        .sort({ createdAt: 'descending' })
 }
 
 export async function getRecipeById(recipeId) {
