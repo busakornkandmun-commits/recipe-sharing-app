@@ -6,12 +6,56 @@ import {
     updateRecipe,
     deleteRecipe,
 } from '../services/recipes.js'
+import {
+    likeRecipe,
+    unlikeRecipe,
+} from '../services/likes.js'
+
 
 export function recipesRoutes(app) {
+
+    // Like a recipe (login required)
+    app.post('/api/v1/recipes/:id/likes', requireAuth, async (req, res) => {
+        try {
+            const like = await likeRecipe(req.auth.sub, req.params.id)
+
+            if (!like) {
+                return res.status(404).json({ error: 'Recipe not found' })
+            }
+
+            // If User already Like it show this message
+            return res.status(201).json(like)
+        } catch (err) {
+            if (err.code === 11000) {
+                return res.status(409).json({ error: 'You already liked this recipe' })
+            }
+
+            console.error('Error liking recipe:', err)
+            return res.status(500).json({ error: 'Failed to like recipe' })
+        }
+    })
+
+    // Unlike a recipe (login required)
+    app.delete('/api/v1/recipes/:id/likes', requireAuth, async (req, res) => {
+        try {
+            const like = await unlikeRecipe(req.auth.sub, req.params.id)
+
+            if (!like) {
+                return res.status(404).json({ error: 'Like not found' })
+            }
+
+            return res.status(204).end()
+        } catch (err) {
+            console.error('Error unliking recipe:', err)
+            return res.status(500).json({ error: 'Failed to unlike recipe' })
+        }
+    })
     // List all recipes
+    // Default newest recipes
     app.get('/api/v1/recipes', async (req, res) => {
         try {
-            return res.json(await listAllRecipes())
+            const { sortBy } = req.query
+            return res.json(await listAllRecipes(sortBy))
         } catch (err) {
             console.error('Error listing recipes:', err)
             return res.status(500).json({ error: 'Failed to list recipes' })

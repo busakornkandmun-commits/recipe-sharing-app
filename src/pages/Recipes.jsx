@@ -1,13 +1,18 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Header } from '../components/Header.jsx'
 import { CreateRecipe } from '../components/CreateRecipe.jsx'
 import { getRecipes } from '../api/recipes.js'
+import { Link } from 'react-router-dom'
 
 export function Recipes() {
+    const [sortBy, setSortBy] = useState('newest')
+
     const recipesQuery = useQuery({
-        queryKey: ['recipes'],
-        queryFn: getRecipes,
+        queryKey: ['recipes', sortBy],
+        queryFn: () => getRecipes(sortBy),
     })
+
 
     const recipes = recipesQuery.data ?? []
 
@@ -21,6 +26,18 @@ export function Recipes() {
             <hr />
 
             <h2>Explore Recipes</h2>
+
+
+            {/* Sort Recipes */}
+            <label htmlFor="sort-recipes">Sort recipes: </label>
+            <select
+                id="sort-recipes"
+                value={sortBy}
+                onChange={(event) => setSortBy(event.target.value)}
+            >
+                <option value="newest">Newest first</option>
+                <option value="least-liked">Least liked first</option>
+            </select>
 
             {recipesQuery.isPending && <p>Loading recipes...</p>}
 
@@ -39,7 +56,7 @@ export function Recipes() {
             <div
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gridTemplateColumns: '1fr',
                     gap: 20,
                 }}
             >
@@ -57,16 +74,19 @@ export function Recipes() {
                             alt={recipe.title}
                             style={{
                                 width: '100%',
-                                height: 180,
+                                height: 290,
                                 objectFit: 'cover',
                                 borderRadius: 6,
                             }}
                         />
 
-                        <h2>{recipe.title}</h2>
+                        <h2>
+                            <Link to={`/recipes/${recipe._id}`}>{recipe.title}</Link>
+                        </h2>
                         <p>
                             Created by: {recipe.author?.username ?? 'Unknown user'}
                         </p>
+                        <p>Likes: {recipe.likesCount ?? 0}</p>
 
                         <h3>Ingredients</h3>
                         <ul>

@@ -4,6 +4,7 @@ import { Signup } from './pages/Signup.jsx'
 import { Login } from './pages/Login.jsx'
 import { AuthContextProvider } from './contexts/AuthContext.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { RecipeDetail } from './pages/RecipeDetail.jsx'
 
 const queryClient = new QueryClient()
 
@@ -11,6 +12,11 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Recipes />,
+  },
+  {
+    // RecipeDetail
+    path: '/recipes/:id',
+    element: <RecipeDetail />,
   },
   {
     path: '/signup',
