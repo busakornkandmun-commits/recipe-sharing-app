@@ -43,7 +43,7 @@ export function Recipes() {
 
             {recipesQuery.isError && (
                 <p role="alert">
-                    Sorry, we couldn't load recipes. Please try again.
+                    Sorry, we couldn&apos;t load recipes. Please try again.
                 </p>
             )}
 
